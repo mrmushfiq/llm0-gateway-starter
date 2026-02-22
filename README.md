@@ -251,7 +251,7 @@ X-Latency-Ms: 234
 - ✅ Redis atomic operations
 
 **What [LLM0.ai](https://llm0.ai) *(Coming Soon)* adds:**
-- ✅ Cost-based limits ($5/day per customer)
+- ✅ Cost-based limits ($X/day per customer)
 - ✅ Multi-dimensional tracking (cost + requests + model + labels)
 - ✅ Soft degradation (downgrade model instead of blocking)
 - ✅ Real-time spend tracking
@@ -267,7 +267,7 @@ X-Latency-Ms: 234
 - ✅ Redis atomic operations
 
 **[LLM0.ai](https://llm0.ai) *(Coming Soon)* adds:**
-- ✅ **Cost-based limits** ($5/day per customer)
+- ✅ **Cost-based limits** ($X/day per customer)
 - ✅ **Per-customer tracking** (who costs you what)
 - ✅ **Label attribution** (track by feature, team, client)
 - ✅ **Real-time dashboards** (spend by customer, model, label)
