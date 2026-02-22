@@ -76,48 +76,57 @@
 - Redis 7+
 - API keys for OpenAI, Anthropic, and/or Gemini
 
-### 1. Clone & Setup
+### Setup Options
 
+**Option A: Automated Setup (Recommended)**
 ```bash
 git clone https://github.com/yourusername/llm0-gateway-starter
 cd llm0-gateway-starter
 
-# Install dependencies
-go mod download
+# Run automated setup script (handles everything)
+./scripts/setup.sh
 
-# Copy environment template
-cp .env.example .env
+# Edit .env with your API keys
+# OPENAI_API_KEY=sk-...
 
-# Edit .env with your credentials
-```
-
-### 2. Database Setup
-
-**Option A: Docker (Quick)**
-```bash
-docker-compose up -d postgres redis
-```
-
-**Option B: Neon (Free)**
-```bash
-# 1. Sign up at https://neon.tech
-# 2. Create a database
-# 3. Copy connection string to .env
-```
-
-### 3. Run Migrations
-
-```bash
-psql "$DATABASE_URL" -f migrations/001_initial_schema.sql
-```
-
-This creates tables and inserts a test API key: `gw_test_abc123`
-
-### 4. Start the Gateway
-
-```bash
+# Start the gateway
 go run cmd/gateway/main.go
 ```
+
+**Option B: Manual Setup**
+```bash
+# 1. Clone and install dependencies
+git clone https://github.com/yourusername/llm0-gateway-starter
+cd llm0-gateway-starter
+go mod download
+
+# 2. Copy environment template
+cp .env.example .env
+# Edit .env with your credentials
+
+# 3. Start infrastructure
+docker-compose up -d
+# Docker automatically runs migrations on first start via /docker-entrypoint-initdb.d
+
+# 4. Start the gateway
+go run cmd/gateway/main.go
+```
+
+**Option C: Without Docker (Using Neon or existing PostgreSQL)**
+```bash
+# 1. Sign up at https://neon.tech (free tier)
+# 2. Create a database
+# 3. Copy connection string to .env
+
+# 4. Run migrations manually
+psql "postgresql://user:pass@host/db" -f migrations/001_initial_schema.sql
+
+# 5. Start Redis locally or use Upstash (free tier)
+# 6. Start the gateway
+go run cmd/gateway/main.go
+```
+
+**Note:** The test API key `gw_test_abc123` is created by the migration.
 
 Gateway runs at `http://localhost:8080`
 
@@ -214,6 +223,61 @@ X-Latency-Ms: 234
 - **Cache:** Redis 7+ (exact-match caching, rate limiting)
 - **Streaming:** Server-Sent Events (SSE) - OpenAI-compatible format
 - **Deployment:** Docker, single binary, cloud-agnostic
+
+---
+
+## 🗄️ Database Migrations
+
+### How Migrations Work
+
+**With Docker (Automatic):**
+```bash
+docker-compose up -d
+# Migrations run automatically on first initialization via /docker-entrypoint-initdb.d
+```
+
+**Manual (When needed):**
+```bash
+# Run migrations directly
+psql "$DATABASE_URL" -f migrations/001_initial_schema.sql
+
+# Or inside Docker container
+docker exec -i gateway_postgres psql -U gateway -d gateway < migrations/001_initial_schema.sql
+```
+
+**Using setup.sh (Recommended):**
+```bash
+./scripts/setup.sh
+# Handles Docker startup + migration in one command
+```
+
+### Making Schema Changes
+
+If you need to modify the database schema, we recommend [**Atlas**](https://atlasgo.io) for managing migrations:
+
+```bash
+# Install Atlas
+brew install ariga/tap/atlas
+
+# Generate migration from schema changes
+atlas migrate diff \
+  --to "file://migrations/001_initial_schema.sql" \
+  --dev-url "docker://postgres/15"
+
+# Apply migrations
+atlas schema apply \
+  --url "postgres://user:pass@host/db" \
+  --to "file://migrations/001_initial_schema.sql"
+```
+
+**Why Atlas?**
+- ✅ Declarative schema management
+- ✅ Automatic migration generation
+- ✅ Schema validation and inspection
+- ✅ Free for open source projects
+- ✅ Works with any PostgreSQL provider
+
+**Alternative:** [golang-migrate](https://github.com/golang-migrate/migrate) is also excellent for version-based migrations.
 
 ---
 

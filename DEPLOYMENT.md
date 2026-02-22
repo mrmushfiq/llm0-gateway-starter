@@ -150,10 +150,34 @@ CACHE_ENABLED=true
 
 ## Database Migrations
 
-### Manual Migration
+### How Migrations Run
 
+**With Docker (Automatic):**
 ```bash
+docker-compose up -d
+# Migrations run automatically on first start via /docker-entrypoint-initdb.d
+# Only runs once when postgres_data volume is created
+```
+
+**With setup.sh (Recommended):**
+```bash
+./scripts/setup.sh
+# Automated script that:
+# 1. Starts Docker containers
+# 2. Waits for PostgreSQL to be ready
+# 3. Runs migrations automatically
+```
+
+**Manual Migration (Any PostgreSQL):**
+```bash
+# For local Docker
+psql postgresql://gateway:gateway@localhost:5432/gateway -f migrations/001_initial_schema.sql
+
+# For Neon or remote database
 psql "$DATABASE_URL" -f migrations/001_initial_schema.sql
+
+# Inside Docker container
+docker exec -i gateway_postgres psql -U gateway -d gateway < migrations/001_initial_schema.sql
 ```
 
 ### Verify Migration
@@ -162,8 +186,41 @@ psql "$DATABASE_URL" -f migrations/001_initial_schema.sql
 # Check tables exist
 psql "$DATABASE_URL" -c "\dt"
 
-# Check sample data
+# Check sample data (should return 12 rows for default model pricing)
 psql "$DATABASE_URL" -c "SELECT COUNT(*) FROM model_pricing;"
+
+# Check test API key exists
+psql "$DATABASE_URL" -c "SELECT key_prefix, name FROM api_keys WHERE key_prefix = 'gw_test';"
+```
+
+### Making Schema Changes
+
+For production schema changes, we recommend [**Atlas**](https://atlasgo.io):
+
+```bash
+# Install Atlas
+brew install ariga/tap/atlas  # macOS
+# or: curl -sSf https://atlasgo.sh | sh
+
+# Generate migration from schema changes
+atlas migrate diff \
+  --to "file://migrations/001_initial_schema.sql" \
+  --dev-url "docker://postgres/15/dev"
+
+# Apply migrations
+atlas schema apply \
+  --url "$DATABASE_URL" \
+  --to "file://migrations/001_initial_schema.sql"
+
+# Inspect current schema
+atlas schema inspect --url "$DATABASE_URL"
+```
+
+**Alternative:** Use [golang-migrate](https://github.com/golang-migrate/migrate) for version-based migrations:
+
+```bash
+go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+migrate -path ./migrations -database "$DATABASE_URL" up
 ```
 
 ---

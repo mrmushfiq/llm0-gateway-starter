@@ -14,17 +14,30 @@
 
 ## 5-Minute Setup
 
-### Step 1: Start Infrastructure
+### Option A: Automated (Easiest)
+
+```bash
+# One command setup - handles everything
+./scripts/setup.sh
+
+# Edit .env and add your API key
+# OPENAI_API_KEY=sk-...
+
+# Start the gateway
+go run cmd/gateway/main.go
+```
+
+### Option B: Manual Setup
+
+**Step 1: Start Infrastructure**
 
 ```bash
 # Start PostgreSQL and Redis with Docker
 docker-compose up -d
-
-# Wait 5 seconds for PostgreSQL to be ready
-sleep 5
+# Migrations run automatically on first start via /docker-entrypoint-initdb.d
 ```
 
-### Step 2: Setup Environment
+**Step 2: Setup Environment**
 
 ```bash
 # Copy environment template
@@ -36,16 +49,18 @@ cp .env.example .env
 # or GEMINI_API_KEY=...
 ```
 
-### Step 3: Initialize Database
+**Step 3: Verify Database (Optional)**
 
 ```bash
-# Run migrations (creates tables + test API key)
+# Check that migrations ran successfully
+psql postgresql://gateway:gateway@localhost:5432/gateway -c "\dt"
+# Should show: api_keys, model_pricing, gateway_logs
+
+# If migrations didn't run, run manually:
 psql postgresql://gateway:gateway@localhost:5432/gateway -f migrations/001_initial_schema.sql
 ```
 
-This creates a test API key: **`gw_test_abc123`**
-
-### Step 4: Start Gateway
+**Step 4: Start Gateway**
 
 ```bash
 go run cmd/gateway/main.go
@@ -58,6 +73,8 @@ You should see:
 ✓ Initialized LLM providers
 🚀 Server listening on http://localhost:8080
 ```
+
+**Test API key created:** `gw_test_abc123`
 
 ---
 
@@ -321,6 +338,60 @@ redis-cli -u "$REDIS_URL" PING
 ```
 
 Should return: `PONG`
+
+### "Need to run migrations again"
+
+```bash
+# Migrations are idempotent (safe to run multiple times)
+psql "$DATABASE_URL" -f migrations/001_initial_schema.sql
+```
+
+---
+
+## Database Schema & Migrations
+
+### How Migrations Work
+
+**With Docker:**
+- Migrations run **automatically on first start** via `/docker-entrypoint-initdb.d`
+- Only runs once when the `postgres_data` volume is created
+- If you need to re-run: `docker-compose down -v` (deletes data!) then `docker-compose up -d`
+
+**With setup.sh:**
+- Script automatically runs migrations after starting Docker
+
+**Manually:**
+```bash
+psql "$DATABASE_URL" -f migrations/001_initial_schema.sql
+```
+
+### Making Schema Changes
+
+If you need to modify the database schema, we recommend [**Atlas**](https://atlasgo.io):
+
+```bash
+# Install on MacOS
+brew install ariga/tap/atlas
+
+# Edit migrations/001_initial_schema.sql with your changes
+
+# Generate migration
+atlas migrate diff \
+  --to "file://migrations/001_initial_schema.sql" \
+  --dev-url "docker://postgres/15/dev"
+
+# Apply changes
+atlas schema apply \
+  --url "$DATABASE_URL" \
+  --to "file://migrations/001_initial_schema.sql"
+```
+
+**Why Atlas?**
+- Declarative schema management
+- Automatic migration generation
+- Free for open source projects
+
+**Alternative:** [golang-migrate](https://github.com/golang-migrate/migrate) for version-based migrations.
 
 ---
 
