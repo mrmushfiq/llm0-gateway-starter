@@ -223,22 +223,9 @@ Alternative: [golang-migrate](https://github.com/golang-migrate/migrate)
 
 ---
 
-## Testing
-
-```bash
-# Run all tests
-go test ./...
-
-# Run with coverage
-go test -cover ./...
-
-# Test basic functionality (requires running gateway)
-./scripts/test_basic.sh
-```
-
----
-
 ## Feature Comparison
+
+**Semantic Caching:** This starter uses exact-match caching (12-15% hit rate). LLM0 adds semantic similarity matching using vector embeddings, achieving 36-40% hit rates by matching queries like "What is AI?" with "Explain artificial intelligence" — 3x better performance and 60-89% cost savings.
 
 | Feature | This Starter | [LLM0.ai](https://llm0.ai) |
 |---------|-------------|---------------------------|
