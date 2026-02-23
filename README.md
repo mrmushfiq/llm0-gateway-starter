@@ -1,144 +1,110 @@
 # LLM0 Gateway Starter
 
-**Open-source, production-ready LLM gateway** with multi-provider support, automatic failover, and intelligent caching.
+[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go)](https://golang.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-> **Self-hosted alternative to LiteLLM and Portkey.** Built in Go for performance and reliability. For advanced features like semantic caching and cost-based rate limiting, see [LLM0.ai](https://llm0.ai) *(Coming Soon)*.
+Production-ready LLM gateway with multi-provider support, automatic failover, streaming, and intelligent caching. Self-hosted alternative to LiteLLM and Portkey.
 
----
-
-## ✨ Features
-
-### What's Included ✅
-
-- **🌐 Multi-Provider Support**
-  - OpenAI (GPT-4, GPT-4o, GPT-4o-mini)
-  - Anthropic (Claude 4, Claude 3.5)
-  - Google Gemini (Gemini 2.0, 2.5)
-  - Unified OpenAI-compatible API
-
-- **🔄 Automatic Failover**
-  - Preset failover chains (e.g., OpenAI → Anthropic → Gemini)
-  - Triggers: 429 rate limits, 5xx errors, timeouts
-  - Zero configuration needed
-
-- **📡 Streaming Support (SSE)**
-  - Server-Sent Events for real-time responses
-  - Works with all three providers
-  - Unified format (OpenAI-compatible)
-
-- **💾 Basic Caching**
-  - Redis-backed exact-match caching
-  - Configurable TTL
-  - Cache hit headers
-
-- **🚦 Token Bucket Rate Limiting**
-  - Per-API-key limits
-  - Redis Lua scripts (atomic operations)
-  - Standard X-RateLimit-* headers
-
-- **💰 Cost Tracking**
-  - Per-request cost calculation
-  - Token counting
-  - Database-driven model pricing
-
-- **📊 Request Logging**
-  - PostgreSQL-backed logs
-  - Cost, latency, tokens tracked
-  - Queryable for analytics
-
-### Coming Soon 🚧
-
-- **🤖 Self-Hosted Models (vLLM + K8s)**
-  - **Llama 3.3 8B / Llama 3.1 8B** — Sweet spot for K8s self-hosting
-    - Fits on a single A100 40GB or T4 16GB (quantized)
-    - Strong general performance for SaaS use cases
-    - Your "cheap alternative to GPT-4o mini"
-  - **Mistral Nemo 12B / Mistral 7B** — Apache 2.0, punches above its weight
-    - Excellent for coding tasks
-    - No usage restrictions
-  - **Qwen 2.5 Coder 7B/14B** — Best coding-specialized model at small sizes
-    - Perfect for SaaS devs building AI features
-    - Optimized for developer tooling
-
-- **🔔 Budget Alerts & Notifications** *(Coming Soon)*
-  - Multi-threshold alerts (70%, 85%, 100%)
-  - Spend forecasting & anomaly detection
-  - Multi-channel notifications (email, webhook, Slack, PagerDuty)
+> Built in Go for performance and reliability. For advanced features (semantic caching, cost-based rate limiting, customer attribution), see [LLM0.ai](https://llm0.ai).
 
 ---
 
-## 🚀 Quick Start
+## Features
+
+### Core Gateway
+- **Multi-Provider Support** — OpenAI, Anthropic, Google Gemini with unified API
+- **Automatic Failover** — Preset chains for 429s, 5xx errors, timeouts
+- **Streaming (SSE)** — Real-time responses in OpenAI-compatible format
+- **Exact-Match Caching** — Redis-backed with 12-15% hit rate
+- **Token Bucket Rate Limiting** — Per-API-key with atomic Redis operations
+- **Cost Tracking** — Per-request cost calculation and token counting
+- **Request Logging** — PostgreSQL analytics for cost, latency, tokens
+
+### Coming Soon
+- Self-hosted open-source models via vLLM (Llama, Mistral, Qwen)
+- Budget alerts & notifications
+
+---
+
+## Quick Start
 
 ### Prerequisites
-
 - Go 1.21+
 - PostgreSQL 15+ (or [Neon](https://neon.tech) free tier)
 - Redis 7+
-- API keys for OpenAI, Anthropic, and/or Gemini
+- At least one LLM provider API key
 
-### Setup Options
+### Automated Setup (Recommended)
 
-**Option A: Automated Setup (Recommended)**
 ```bash
-git clone https://github.com/yourusername/llm0-gateway-starter
+git clone https://github.com/mrmushfiq/llm0-gateway-starter
 cd llm0-gateway-starter
 
-# Run automated setup script (handles everything)
+# Run setup script (handles everything)
 ./scripts/setup.sh
 
-# Edit .env with your API keys
-# OPENAI_API_KEY=sk-...
+# Add your API key to .env
+nano .env
 
 # Start the gateway
 go run cmd/gateway/main.go
 ```
 
-**Option B: Manual Setup**
+Gateway runs at `http://localhost:8080`
+
+### Manual Setup
+
 ```bash
-# 1. Clone and install dependencies
-git clone https://github.com/yourusername/llm0-gateway-starter
+# Clone and install dependencies
+git clone https://github.com/mrmushfiq/llm0-gateway-starter
 cd llm0-gateway-starter
 go mod download
 
-# 2. Copy environment template
-cp .env.example .env
-# Edit .env with your credentials
-
-# 3. Start infrastructure
+# Start infrastructure (auto-runs migrations)
 docker-compose up -d
-# Docker automatically runs migrations on first start via /docker-entrypoint-initdb.d
 
-# 4. Start the gateway
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# Start the gateway
 go run cmd/gateway/main.go
 ```
 
-**Option C: Without Docker (Using Neon or existing PostgreSQL)**
+### Environment Variables
+
+Required variables (see [.env.example](.env.example)):
+
 ```bash
-# 1. Sign up at https://neon.tech (free tier)
-# 2. Create a database
-# 3. Copy connection string to .env
+# Server
+PORT=8080
 
-# 4. Run migrations manually
-psql "postgresql://user:pass@host/db" -f migrations/001_initial_schema.sql
+# Database (PostgreSQL 15+)
+DATABASE_URL=postgresql://gateway:gateway@localhost:5432/gateway
 
-# 5. Start Redis locally or use Upstash (free tier)
-# 6. Start the gateway
-go run cmd/gateway/main.go
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# LLM Provider API Keys (at least one required)
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GEMINI_API_KEY=...
+
+# Optional: Rate Limiting & Caching
+DEFAULT_RATE_LIMIT=100
+CACHE_TTL_SECONDS=3600
 ```
-
-**Note:** The test API key `gw_test_abc123` is created by the migration.
-
-Gateway runs at `http://localhost:8080`
 
 ---
 
-## 📖 Usage
+## Usage
 
 ### Basic Request
 
 ```bash
 curl -X POST http://localhost:8080/v1/chat/completions \
-  -H "Authorization: Bearer your-api-key" \
+  -H "Authorization: Bearer gw_test_abc123" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-4o-mini",
@@ -146,11 +112,13 @@ curl -X POST http://localhost:8080/v1/chat/completions \
   }'
 ```
 
-### Streaming Request
+**Test API key:** `gw_test_abc123` (created by migration)
+
+### Streaming
 
 ```bash
 curl -N -X POST http://localhost:8080/v1/chat/completions \
-  -H "Authorization: Bearer your-api-key" \
+  -H "Authorization: Bearer gw_test_abc123" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-4o-mini",
@@ -162,276 +130,172 @@ curl -N -X POST http://localhost:8080/v1/chat/completions \
 ### Response Headers
 
 ```http
-HTTP/1.1 200 OK
 X-Cache-Hit: miss
 X-Cost-USD: 0.000009
 X-Provider: openai
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 87
-X-Latency-Ms: 234
+X-Latency-Ms: 28
 ```
-
-**Note:** Use the test API key `gw_test_abc123` for testing (created by migration).
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────┐
 │   Client    │
 └──────┬──────┘
-       │ HTTP POST
+       │ HTTP POST /v1/chat/completions
        ▼
-┌─────────────────────────────────────────────────┐
-│           LLM Gateway (Go)                      │
-│                                                 │
-│  ┌──────────────────────────────────────────┐  │
-│  │  1. Auth & Rate Limiting                 │  │
-│  └──────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────┐  │
-│  │  2. Cache Check (Redis)                  │  │
-│  └──────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────┐  │
-│  │  3. Provider Detection                   │  │
-│  │     (OpenAI / Anthropic / Gemini)        │  │
-│  └──────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────┐  │
-│  │  4. Failover Logic                       │  │
-│  │     (Retry with next provider if fails)  │  │
-│  └──────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────┐  │
-│  │  5. Streaming or Standard Response       │  │
-│  └──────────────────────────────────────────┘  │
-│  ┌──────────────────────────────────────────┐  │
-│  │  6. Cost Tracking & Logging              │  │
-│  └──────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────┘
-       │
-       ▼ (One of three)
+┌─────────────────────────────────────────┐
+│        LLM Gateway (Go)                 │
+│  1. Auth & Rate Limiting (Redis)        │
+│  2. Cache Check (Redis)                 │
+│  3. Provider Detection                  │
+│  4. Failover Logic                      │
+│  5. Streaming or Standard Response      │
+│  6. Cost Tracking & Logging (Postgres)  │
+└──────────┬──────────────────────────────┘
+           │
+           ▼ (Automatic failover)
 ┌──────────┬──────────────┬──────────────┐
 │  OpenAI  │  Anthropic   │    Gemini    │
 └──────────┴──────────────┴──────────────┘
 ```
 
----
-
-## 🏗️ Technical Stack
-
-- **Language:** Go 1.21+ (performance, concurrency, single binary deployment)
-- **Database:** PostgreSQL 15+ (request logs, cost tracking, analytics)
-- **Cache:** Redis 7+ (exact-match caching, rate limiting)
-- **Streaming:** Server-Sent Events (SSE) - OpenAI-compatible format
-- **Deployment:** Docker, single binary, cloud-agnostic
+**Tech Stack:**
+- Go 1.21+ (performance, concurrency, single binary)
+- PostgreSQL 15+ (logs, cost tracking, analytics)
+- Redis 7+ (caching, rate limiting)
+- Server-Sent Events (SSE) for streaming
 
 ---
 
-## 🗄️ Database Migrations
+## Performance
 
-### How Migrations Work
+| Operation | Latency | Notes |
+|-----------|---------|-------|
+| Cache hit | 1-3ms | Redis lookup |
+| Rate limit check | 2ms | Redis INCR |
+| Provider API call | 200-3000ms | Provider-dependent |
+| Streaming (first token) | 200-400ms | Provider-dependent |
+| Database log | Non-blocking | Async via goroutine |
+
+**Gateway overhead:** ~28ms (auth + rate limit + cache check + logging)
+
+---
+
+## Database Migrations
+
+### How It Works
 
 **With Docker (Automatic):**
 ```bash
 docker-compose up -d
-# Migrations run automatically on first initialization via /docker-entrypoint-initdb.d
+# Migrations run automatically on first start via /docker-entrypoint-initdb.d
 ```
 
-**Manual (When needed):**
-```bash
-# Run migrations directly
-psql "$DATABASE_URL" -f migrations/001_initial_schema.sql
-
-# Or inside Docker container
-docker exec -i gateway_postgres psql -U gateway -d gateway < migrations/001_initial_schema.sql
-```
-
-**Using setup.sh (Recommended):**
+**With setup.sh:**
 ```bash
 ./scripts/setup.sh
-# Handles Docker startup + migration in one command
+# Handles Docker startup + migrations automatically
+```
+
+**Manual:**
+```bash
+psql "$DATABASE_URL" -f migrations/001_initial_schema.sql
 ```
 
 ### Making Schema Changes
 
-If you need to modify the database schema, we recommend [**Atlas**](https://atlasgo.io) for managing migrations:
+For production schema changes, we recommend [Atlas](https://atlasgo.io):
 
 ```bash
-# Install Atlas
 brew install ariga/tap/atlas
 
-# Generate migration from schema changes
-atlas migrate diff \
-  --to "file://migrations/001_initial_schema.sql" \
-  --dev-url "docker://postgres/15"
-
-# Apply migrations
-atlas schema apply \
-  --url "postgres://user:pass@host/db" \
-  --to "file://migrations/001_initial_schema.sql"
+# Edit migrations/001_initial_schema.sql, then:
+atlas migrate diff --to "file://migrations/001_initial_schema.sql" --dev-url "docker://postgres/15"
+atlas schema apply --url "$DATABASE_URL" --to "file://migrations/001_initial_schema.sql"
 ```
 
-**Why Atlas?**
-- ✅ Declarative schema management
-- ✅ Automatic migration generation
-- ✅ Schema validation and inspection
-- ✅ Free for open source projects
-- ✅ Works with any PostgreSQL provider
-
-**Alternative:** [golang-migrate](https://github.com/golang-migrate/migrate) is also excellent for version-based migrations.
+Alternative: [golang-migrate](https://github.com/golang-migrate/migrate)
 
 ---
 
-## 🆚 Feature Comparison
+## Testing
 
-### Basic vs. Advanced Features
+```bash
+# Run all tests
+go test ./...
 
-### 🧠 **Semantic Caching**
+# Run with coverage
+go test -cover ./...
 
-**What this project includes:**
-- ✅ Exact-match caching (Redis)
-- ✅ ~12-15% cache hit rate
-- ✅ Sub-millisecond cache responses
-
-**What [LLM0.ai](https://llm0.ai) *(Coming Soon)* adds:**
-- ✅ Semantic similarity matching
-- ✅ 36-40% cache hit rate (3x better)
-- ✅ 60-89% cost reduction
-- ✅ Vector-based similarity search
-
-**Why it matters:**
-- "What is AI?" matches "Explain artificial intelligence"
-- Users rephrase questions constantly
-- Exact-match alone misses 75% of cacheable queries
-
-[Learn more →](https://llm0.ai/features/semantic-caching)
+# Test basic functionality (requires running gateway)
+./scripts/test_basic.sh
+```
 
 ---
 
-### 💰 **Cost-Based Rate Limiting**
-
-**What this project includes:**
-- ✅ Token bucket rate limiting (requests/minute)
-- ✅ Per-API-key limits
-- ✅ Redis atomic operations
-
-**What [LLM0.ai](https://llm0.ai) *(Coming Soon)* adds:**
-- ✅ Cost-based limits ($X/day per customer)
-- ✅ Multi-dimensional tracking (cost + requests + model + labels)
-- ✅ Soft degradation (downgrade model instead of blocking)
-- ✅ Real-time spend tracking
-
-**Why it matters:**
-- 1000 GPT-4 requests ≠ 1000 GPT-4o-mini requests (cost difference: 50x)
-- Standard rate limiting doesn't protect profit margins
-- Power users can destroy your economics
-
-**This project includes:**
-- ✅ Token bucket rate limiting (requests/minute)
-- ✅ Per-API-key limits
-- ✅ Redis atomic operations
-
-**[LLM0.ai](https://llm0.ai) *(Coming Soon)* adds:**
-- ✅ **Cost-based limits** ($X/day per customer)
-- ✅ **Per-customer tracking** (who costs you what)
-- ✅ **Label attribution** (track by feature, team, client)
-- ✅ **Real-time dashboards** (spend by customer, model, label)
-
-[Learn more about LLM0's cost-based rate limiting →](https://llm0.ai/features/cost-based-limits)
-
----
-
-### 📊 **Customer Attribution & Analytics**
-
-**What this project includes:**
-- ✅ Request logging (PostgreSQL)
-- ✅ Cost and latency tracking
-- ✅ Per-model analytics
-
-**What [LLM0.ai](https://llm0.ai) *(Coming Soon)* adds:**
-- ✅ Per-customer spend tracking (`X-Customer-ID`)
-- ✅ Label-based attribution (`X-LLM0-Feature`, `X-LLM0-Client`)
-- ✅ Real-time dashboards ("who costs me money")
-- ✅ Budget alerts (70%, 85%, 100% thresholds) *(Coming Soon)*
-- ✅ Spend forecasting (predict monthly costs) *(Coming Soon)*
-- ✅ Multi-channel notifications (email, webhook, Slack, PagerDuty) *(Coming Soon)*
-
-**Why it matters:**
-- SaaS: Track costs per end-user
-- Agencies: Track costs per client
-- Multi-tenant: Prevent one user from blowing your budget
-
-**This project includes:**
-- ✅ Request logging (PostgreSQL)
-- ✅ Cost, latency, token tracking
-- ✅ Queryable analytics
-
-**[LLM0.ai](https://llm0.ai) adds:**
-- ✅ Per-customer spend tracking
-- ✅ Multi-dimensional attribution (feature, team, client)
-- ✅ Real-time headers (`X-Customer-Spend-Today`)
-- ✅ Spend forecasting & anomaly detection
-- ✅ Multi-channel alerts (email, webhook, Slack, PagerDuty)
-
-[Learn more about LLM0's analytics →](https://llm0.ai/features/analytics)
-
----
-
-## 🎯 Comparison: Starter vs. LLM0
+## Feature Comparison
 
 | Feature | This Starter | [LLM0.ai](https://llm0.ai) |
-|---------|--------------|---------------------------|
-| **Multi-provider** | ✅ 3 providers | ✅ 3 providers |
-| **Failover** | ✅ Basic | ✅ Advanced + configurable |
-| **Streaming** | ✅ SSE | ✅ SSE |
-| **Caching** | ✅ Exact-match (Redis) | ✅ Exact + **Semantic** |
-| **Rate Limiting** | ✅ Token bucket | ✅ Token bucket + **Cost-based** |
-| **Cost Tracking** | ✅ Per-request | ✅ Per-request + **Per-customer** |
-| **Customer Attribution** | ❌ | ✅ **Multi-dimensional** |
-| **Soft Limits** | ❌ | ✅ **Model downgrade** |
-| **Label Tracking** | ❌ | ✅ **Feature/team/client** |
-| **Budget Alerts** | ❌ | ✅ **Email/webhook/Slack/PagerDuty** |
-| **Spend Forecasting** | ❌ | ✅ **Predictive alerts** |
-| **Shadow Mode** | ❌ | ✅ **A/B testing** |
-| **Scheduled Jobs** | ❌ | ✅ **Automatic maintenance** |
-| **Dashboard** | ❌ | ✅ **Real-time analytics** |
-| **Support** | Community | ✅ **Priority support** |
+|---------|-------------|---------------------------|
+| **Multi-provider** | ✅ OpenAI, Anthropic, Gemini | ✅ Same |
+| **Automatic Failover** | ✅ Preset chains | ✅ Preset + custom |
+| **Streaming (SSE)** | ✅ OpenAI-compatible | ✅ Same |
+| **Caching** | ✅ Exact-match (12-15% hit rate) | ✅ Exact + Semantic (36-40% hit rate) |
+| **Rate Limiting** | ✅ Token bucket (requests/min) | ✅ Token bucket + Cost-based ($/day) |
+| **Cost Tracking** | ✅ Per-request | ✅ Per-request + Per-customer |
+| **Request Logging** | ✅ PostgreSQL | ✅ PostgreSQL + real-time dashboards |
+| **Customer Attribution** | ❌ | ✅ Multi-dimensional (customer/feature/team) |
+| **Budget Alerts** | ❌ | ✅ Multi-threshold (70%/85%/100%) |
+| **Notifications** | ❌ | ✅ Email, webhook, Slack, PagerDuty |
+| **Spend Forecasting** | ❌ | ✅ Predictive analytics |
+| **Anomaly Detection** | ❌ | ✅ Unusual spend patterns |
+| **Shadow Mode** | ❌ | ✅ A/B testing |
+| **Scheduled Jobs** | ❌ | ✅ Automatic maintenance |
+| **Support** | Community | ✅ Priority support |
+| **Deployment** | Self-hosted | ✅ Managed + self-hosted |
 
 ---
 
-## 🤝 Contributing
+## Documentation
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- [FEATURES.md](FEATURES.md) — Detailed feature list
+- [ARCHITECTURE.md](ARCHITECTURE.md) — Technical design deep-dive
+- [DEPLOYMENT.md](DEPLOYMENT.md) — Deployment options (local, Neon, production)
+- [CONTRIBUTING.md](CONTRIBUTING.md) — Contribution guidelines
+- [GETTING_STARTED.md](GETTING_STARTED.md) — Step-by-step setup guide
 
-**We'd love help with:**
+---
+
+## Contributing
+
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+**Looking for help with:**
 - New providers (Cohere, Mistral, Together AI)
 - Failover chain improvements
 - Performance optimizations
-- Additional test coverage
-- Documentation enhancements
+- Test coverage
+- Documentation
 
 ---
 
-## 📜 License
+## License
 
-MIT License - Free to use, modify, and distribute.
-
-**Attribution appreciated but not required.**
+MIT License — Free to use, modify, and distribute. See [LICENSE](LICENSE).
 
 ---
 
-## 🙏 Acknowledgments
+## Links
 
-Created by Mushfiq Rahman [@mrmushfiq](https://github.com/mrmushfiq).
-
----
-
-## 🔗 Links
-
-- **Production Version:** [LLM0.ai](https://llm0.ai)
-- [Twitter](https://twitter.com/mushfiq_dev)
+- **Managed Version:** [LLM0.ai](https://llm0.ai) (Coming Soon)
+- **Author:** [@mrmushfiq](https://github.com/mrmushfiq)
+- **Twitter:** [@mushfiq_dev](https://twitter.com/mushfiq_dev)
 
 ---
 
-**⭐ If this helped you, please star the repo!**
-
-**Questions? Open an issue or check out the [full version at LLM0.ai](https://llm0.ai)** (Coming soon)
+**⭐ Star this repo if it helped you!**
