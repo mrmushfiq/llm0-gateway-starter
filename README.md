@@ -263,10 +263,8 @@ Alternative: [golang-migrate](https://github.com/golang-migrate/migrate)
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 **Looking for help with:**
-- New providers (Cohere, Mistral, Together AI)
 - Failover chain improvements
 - Performance optimizations
-- Test coverage
 - Documentation
 
 ---
