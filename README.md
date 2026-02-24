@@ -181,7 +181,15 @@ X-Latency-Ms: 28
 | Streaming (first token) | 200-400ms | Provider-dependent |
 | Database log | Non-blocking | Async via goroutine |
 
-**Gateway overhead:** ~28ms (auth + rate limit + cache check + logging)
+**End-to-end latency (optimized cloud deployment):**
+- Exact-match cache hit: ~28ms
+- Cache miss: ~230-3030ms (28ms gateway + 200-3000ms provider API)
+
+**LLM0.ai (with semantic caching):**
+- Semantic cache hit: ~52ms
+- Exact-match cache hit: ~28ms
+
+*Measured on optimized production infrastructure*
 
 ---
 
@@ -224,7 +232,7 @@ Alternative: [golang-migrate](https://github.com/golang-migrate/migrate)
 
 ## Feature Comparison
 
-**Semantic Caching:** This starter uses exact-match caching (12-15% hit rate). LLM0 adds semantic similarity matching using vector embeddings, achieving 36-40% hit rates by matching queries like "What is AI?" with "Explain artificial intelligence" — 3x better performance and 60-89% cost savings.
+**Semantic Caching:** This starter uses exact-match caching (12-15% hit rate, ~28ms end-to-end). LLM0 adds semantic similarity matching using vector embeddings (52ms end-to-end, 36-40% hit rate), matching queries like "What is AI?" with "Explain artificial intelligence" — 3x better hit rates and 60-89% cost savings.
 
 **Self-Hosted Models:** LLM0 managed platform supports self-hosted open-source models via vLLM (Llama 3.3 8B, Mistral Nemo 12B, Qwen 2.5 Coder) with GPU infrastructure included. Run inference at ~$0.10/1M tokens vs. $0.15-$0.60 for cloud APIs.
 

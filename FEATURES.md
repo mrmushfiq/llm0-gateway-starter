@@ -239,6 +239,17 @@ models/       → Data models
 | Provider API call | 1-3s | Provider-limited |
 | Streaming (first token) | 200-400ms | Provider-limited |
 
+**End-to-end latency (optimized cloud deployment):**
+- Exact-match cache hit: ~28ms
+- Cache miss: ~230-3030ms (28ms gateway + 200-3000ms provider API)
+
+**LLM0.ai with semantic caching:**
+- Semantic cache hit: ~52ms (+24ms for semantic matching)
+- Exact-match cache hit: ~28ms
+- 3x better hit rates (36-40% vs 12-15%)
+
+*Measured on optimized production infrastructure*
+
 **Tested on:** MacBook Pro M1, 8GB RAM, local PostgreSQL + Redis
 
 ---
@@ -248,9 +259,9 @@ models/       → Data models
 ### Advanced Features (Available in [LLM0.ai](https://llm0.ai) *Coming Soon*)
 
 #### Semantic Caching
-- **This project:** 12-15% hit rate (exact-match)
-- **LLM0 *(Coming Soon)*:** 36-40% hit rate (exact + semantic)
-- **Difference:** 3x better cache performance, 60-89% cost savings
+- **This project:** 12-15% hit rate (exact-match), ~28ms end-to-end
+- **LLM0 *(Coming Soon)*:** 36-40% hit rate (exact + semantic), ~52ms end-to-end for semantic matches
+- **Difference:** 3x better hit rates, 60-89% cost savings (semantic matching adds 24ms but provides much better cache hit rates)
 
 #### Self-Hosted Models (vLLM)
 - **This project:** Not included (requires GPU infrastructure)

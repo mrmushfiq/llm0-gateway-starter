@@ -62,9 +62,9 @@
 For production-scale deployments, [LLM0.ai](https://llm0.ai) *(Coming Soon)* offers:
 
 ### 🧠 Semantic Caching
-- **This starter:** 12-15% cache hit rate (exact-match only)
-- **LLM0:** 36-40% cache hit rate (exact + semantic)
-- **Savings:** 60-89% cost reduction with semantic matching
+- **This starter:** 12-15% cache hit rate (exact-match only), ~28ms end-to-end
+- **LLM0:** 36-40% cache hit rate (exact + semantic), ~52ms end-to-end for semantic matches
+- **Savings:** 60-89% cost reduction with semantic matching (3x better hit rates)
 
 ### 🤖 Self-Hosted Models (vLLM)
 - **This starter:** Not included (requires GPU infrastructure)

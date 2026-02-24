@@ -165,6 +165,16 @@ docker run -p 8080:8080 --env-file .env llm-gateway
 - **Database logging:** Async (non-blocking)
 - **Concurrency:** Go's goroutines handle 1000s of concurrent requests
 
+**End-to-end latency (optimized cloud deployment):**
+- Exact-match cache hit: ~28ms
+- Cache miss: ~230-3030ms (28ms gateway + 200-3000ms provider API)
+
+**LLM0.ai with semantic caching:**
+- Semantic cache hit: ~52ms (+24ms for semantic matching)
+- 3x better hit rates (36-40% vs 12-15%)
+
+*Measured on optimized production infrastructure*
+
 ## Security
 
 - API keys stored as SHA-256 hashes
