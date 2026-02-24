@@ -64,16 +64,16 @@ For production-scale deployments, [LLM0.ai](https://llm0.ai) *(Coming Soon)* off
 ### 🧠 Semantic Caching
 - **This starter:** 12-15% cache hit rate (exact-match only), ~28ms end-to-end
 - **LLM0:** 36-40% cache hit rate (exact + semantic), ~52ms end-to-end for semantic matches
-- **Savings:** 60-89% cost reduction with semantic matching (3x better hit rates)
+- **Savings:** Up to 40% reduction in API costs (scales with query repetition patterns)
 
-### 🤖 Self-Hosted Models (vLLM)
-- **This starter:** Not included (requires GPU infrastructure)
-- **LLM0:** Llama 3.3 8B, Mistral Nemo 12B, Qwen 2.5 Coder with managed GPU deployment
-- **Savings:** Run inference at ~$0.10/1M tokens vs. $0.15-$0.60 for cloud APIs
+### 🤖 Open-Source Models via vLLM (LLM0 Managed)
+- **This starter:** Not included
+- **LLM0:** Llama 3.3 8B, Mistral Nemo 12B, Qwen 2.5 Coder served via vLLM on managed GPU infrastructure
+- **Savings:** Significantly lower per-token costs than cloud APIs at production scale
 
 ### 💰 Cost-Based Rate Limiting
 - **This starter:** Token bucket (requests/min only)
-- **LLM0:** Multi-dimensional cost limits ($5/day per customer)
+- **LLM0:** Multi-dimensional cost limits (configurable per-customer spend caps)
 - **Why it matters:** Protect profit margins from power users
 
 ### 📊 Customer Attribution
@@ -223,7 +223,7 @@ For production deployment, you'll need to set up:
 ### Choose [LLM0.ai](https://llm0.ai) *(Coming Soon)* If:
 - 🚀 Multi-tenant SaaS application
 - 🚀 LLM spend > $500/month
-- 🚀 Need semantic caching (36-40% hit rate, 60-89% cost savings)
+- 🚀 Need semantic caching (36-40% hit rate, up to 40% API cost reduction)
 - 🚀 Cost-based rate limiting required
 - 🚀 Per-customer attribution needed
 - 🚀 Budget alerts *(Coming Soon)* and anomaly detection *(Coming Soon)* needed

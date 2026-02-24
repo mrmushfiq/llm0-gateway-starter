@@ -17,7 +17,7 @@ Production-ready LLM gateway with multi-provider support, automatic failover, st
 - **Automatic Failover** — Preset chains for 429s, 5xx errors, timeouts
 - **Streaming (SSE)** — Real-time responses in OpenAI-compatible format
 - **Exact-Match Caching** — Redis-backed with 12-15% hit rate
-- **Token Bucket Rate Limiting** — Per-API-key with atomic Redis operations
+- **Token Bucket Rate Limiting** — Per-API-key limits, configurable per key in the database (`rate_limit_per_minute`, default: 100 req/min)
 - **Cost Tracking** — Per-request cost calculation and token counting
 - **Request Logging** — PostgreSQL analytics for cost, latency, tokens
 
@@ -232,9 +232,9 @@ Alternative: [golang-migrate](https://github.com/golang-migrate/migrate)
 
 ## Feature Comparison
 
-**Semantic Caching:** This starter uses exact-match caching (12-15% hit rate, ~28ms end-to-end). LLM0 adds semantic similarity matching using vector embeddings (52ms end-to-end, 36-40% hit rate), matching queries like "What is AI?" with "Explain artificial intelligence" — 3x better hit rates and 60-89% cost savings.
+**Semantic Caching:** This starter uses exact-match caching (12-15% hit rate, ~28ms end-to-end). LLM0 adds semantic similarity matching using vector embeddings (52ms end-to-end, 36-40% hit rate), matching queries like "What is AI?" with "Explain artificial intelligence" — 3x better hit rates and up to 40% reduction in API costs (varies with query repetition patterns).
 
-**Self-Hosted Models:** LLM0 managed platform supports self-hosted open-source models via vLLM (Llama 3.3 8B, Mistral Nemo 12B, Qwen 2.5 Coder) with GPU infrastructure included. Run inference at ~$0.10/1M tokens vs. $0.15-$0.60 for cloud APIs.
+**Open-Source Models:** LLM0 managed platform serves open-source models (Llama 3.3 8B, Mistral Nemo 12B, Qwen 2.5 Coder) via vLLM on managed GPU infrastructure — significantly lower per-token costs than cloud APIs at production scale.
 
 | Feature | This Starter | [LLM0.ai](https://llm0.ai) |
 |---------|-------------|---------------------------|
@@ -242,7 +242,7 @@ Alternative: [golang-migrate](https://github.com/golang-migrate/migrate)
 | **Automatic Failover** | ✅ Preset chains | ✅ Preset + custom |
 | **Streaming (SSE)** | ✅ OpenAI-compatible | ✅ Same |
 | **Caching** | ✅ Exact-match (12-15% hit rate) | ✅ Exact + Semantic (36-40% hit rate) |
-| **Rate Limiting** | ✅ Token bucket (requests/min) | ✅ Token bucket + Cost-based ($/day) |
+| **Rate Limiting** | ✅ Token bucket (requests/min) | ✅ Token bucket + Cost-based (configurable $/day) |
 | **Cost Tracking** | ✅ Per-request | ✅ Per-request + Per-customer |
 | **Request Logging** | ✅ PostgreSQL | ✅ PostgreSQL + real-time dashboards |
 | **Customer Attribution** | ❌ | ✅ Multi-dimensional (customer/feature/team) |

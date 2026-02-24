@@ -261,16 +261,16 @@ models/       → Data models
 #### Semantic Caching
 - **This project:** 12-15% hit rate (exact-match), ~28ms end-to-end
 - **LLM0 *(Coming Soon)*:** 36-40% hit rate (exact + semantic), ~52ms end-to-end for semantic matches
-- **Difference:** 3x better hit rates, 60-89% cost savings (semantic matching adds 24ms but provides much better cache hit rates)
+- **Difference:** 3x better hit rates, up to 40% reduction in API costs (varies with query repetition patterns in your workload)
 
-#### Self-Hosted Models (vLLM)
+#### Open-Source Models via vLLM (LLM0 Managed)
 - **This project:** Not included (requires GPU infrastructure)
 - **LLM0 *(Coming Soon)*:** Llama 3.3 8B, Mistral Nemo 12B, Qwen 2.5 Coder with managed GPU deployment
 - **Difference:** Run inference at ~$0.10/1M tokens, no rate limits, full control
 
 #### Cost-Based Rate Limiting
 - **This project:** Token bucket (requests/minute)
-- **LLM0 *(Coming Soon)*:** Multi-dimensional cost limits ($5/day per customer, per-model caps, label attribution)
+- **LLM0 *(Coming Soon)*:** Multi-dimensional cost limits (configurable per-customer spend caps, per-model caps, label attribution)
 
 #### Customer Attribution
 - **This project:** Per-API-key logging
@@ -289,7 +289,7 @@ models/       → Data models
 | Feature | This Project | [LLM0.ai](https://llm0.ai) *(Coming Soon)* |
 |---------|--------------|---------------------------|
 | **Multi-provider** | ✅ 3 providers | ✅ 3 providers + Self-hosted (vLLM) |
-| **Self-hosted models** | ❌ (requires GPU infrastructure) | ✅ Llama, Mistral, Qwen with managed GPUs |
+| **Open-source models** | ❌ | ✅ Llama, Mistral, Qwen on LLM0 managed GPUs |
 | **Failover** | ✅ Preset chains | ✅ Preset + custom |
 | **Streaming** | ✅ SSE | ✅ SSE |
 | **Caching** | ✅ Exact-match (12-15%) | ✅ Exact + Semantic (36-40%) |
@@ -433,7 +433,7 @@ client = OpenAI(
 
 ### Use [LLM0.ai](https://llm0.ai):
 - Multi-tenant SaaS (need per-customer tracking)
-- LLM spend > $500/month (semantic caching saves 60-89%)
+- LLM spend > $500/month (semantic caching reduces API costs — savings scale with query volume and repetition)
 - Need cost-based limits (protect margins)
 - Want managed infrastructure (zero ops)
 - Require advanced analytics

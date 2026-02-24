@@ -39,7 +39,7 @@ This project focuses on **core gateway functionality**. Advanced features are av
 
 **Not in scope for this repo:**
 - Semantic caching (vector similarity search)
-- Self-hosted models (requires GPU infrastructure, available in LLM0.ai managed platform)
+- Open-source models via vLLM (available in LLM0.ai managed platform)
 - Cost-based rate limiting (per-customer spend caps)
 - Customer attribution (multi-dimensional tracking)
 - Scheduled maintenance jobs

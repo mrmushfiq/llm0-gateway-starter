@@ -294,13 +294,45 @@ func (m *Manager) setupFailoverChains() {
 
 ### 4. Adjust Rate Limits
 
-Update in database:
+Rate limits are stored per API key in the `api_keys` table (`rate_limit_per_minute` column, default: `100`). Changes take effect immediately — no restart needed.
 
+**View current limits:**
 ```sql
-UPDATE api_keys 
-SET rate_limit_per_minute = 200 
+SELECT key_prefix, name, rate_limit_per_minute FROM api_keys;
+```
+
+**Update a specific key:**
+```sql
+UPDATE api_keys
+SET rate_limit_per_minute = 500
 WHERE key_prefix = 'gw_test_abc';
 ```
+
+**Set different limits per use case:**
+```sql
+-- Generous limit for internal services
+UPDATE api_keys SET rate_limit_per_minute = 1000 WHERE name = 'Internal Service';
+
+-- Strict limit for free-tier users
+UPDATE api_keys SET rate_limit_per_minute = 20 WHERE name = 'Free Tier Key';
+
+-- No effective limit for premium users
+UPDATE api_keys SET rate_limit_per_minute = 10000 WHERE name = 'Premium Key';
+```
+
+**Set limit when creating a new key:**
+```sql
+INSERT INTO api_keys (key_hash, key_prefix, name, rate_limit_per_minute, cache_enabled)
+VALUES (
+  encode(digest('my_new_key_abc123', 'sha256'), 'hex'),
+  'my_new_key',
+  'Premium Customer',
+  1000,
+  true
+);
+```
+
+The `X-RateLimit-Limit` and `X-RateLimit-Remaining` response headers always reflect the actual limit for that key.
 
 ### 5. Deploy to Production
 
@@ -422,9 +454,9 @@ atlas schema apply \
 
 ### [LLM0.ai](https://llm0.ai) *(Coming Soon)* (Managed Service)
 - ✅ Everything in open source, plus:
-- ✅ **Semantic caching** (36-40% hit rate, 60-89% cost savings)
-- ✅ **Self-hosted models** (vLLM: Llama, Mistral, Qwen with managed GPUs)
-- ✅ **Cost-based rate limiting** ($5/day per customer caps)
+- ✅ **Semantic caching** (36-40% hit rate, up to 40% API cost reduction)
+- ✅ **Open-source models** (Llama, Mistral, Qwen via vLLM on LLM0 managed GPUs)
+- ✅ **Cost-based rate limiting** (configurable per-customer spend caps)
 - ✅ **Customer attribution** (track per-user costs)
 - ✅ **Budget alerts** (70%, 85%, 100% thresholds) *(Coming Soon)*
 - ✅ **Multi-channel notifications** (email, webhook, Slack, PagerDuty) *(Coming Soon)*

@@ -187,8 +187,8 @@ docker run -p 8080:8080 --env-file .env llm-gateway
 This project provides core gateway functionality. For production-scale deployments with high traffic, [LLM0.ai](https://llm0.ai) *(Coming Soon)* offers:
 
 - **Semantic caching** (36-40% hit rate vs. 12-15%)
-- **Self-hosted models** (vLLM: Llama, Mistral, Qwen with managed GPU infrastructure)
-- **Cost-based rate limiting** ($5/day per customer caps)
+- **Open-source models** (Llama, Mistral, Qwen via vLLM on LLM0 managed GPU infrastructure)
+- **Cost-based rate limiting** (configurable per-customer spend caps)
 - **Customer attribution** (multi-dimensional tracking)
 - **Scheduled maintenance** (automatic cache cleanup, reconciliation)
 - **Budget alerts** (70%, 85%, 100% thresholds) *(Coming Soon)*
