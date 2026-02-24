@@ -57,21 +57,6 @@
 - **Cache:** Redis 7+
 - **Deployment:** Docker, local development
 
-## 🚧 Coming Soon
-
-### 🤖 Self-Hosted Models (vLLM + K8s)
-- **Llama 3.3 8B / Llama 3.1 8B** — Sweet spot for K8s self-hosting
-- **Mistral Nemo 12B / Mistral 7B** — Apache 2.0, coding-focused
-- **Qwen 2.5 Coder 7B/14B** — Best coding model at small sizes
-- **Why:** Run inference at ~$0.10/1M tokens, no rate limits, full control
-
-### 🔔 Budget Alerts & Notifications
-- Multi-threshold alerts (70%, 85%, 100%)
-- Multi-channel notifications (email, webhook, Slack, PagerDuty)
-- Spend forecasting & anomaly detection
-
----
-
 ## Advanced Features (LLM0.ai *Coming Soon*)
 
 For production-scale deployments, [LLM0.ai](https://llm0.ai) *(Coming Soon)* offers:
@@ -80,6 +65,11 @@ For production-scale deployments, [LLM0.ai](https://llm0.ai) *(Coming Soon)* off
 - **This starter:** 12-15% cache hit rate (exact-match only)
 - **LLM0:** 36-40% cache hit rate (exact + semantic)
 - **Savings:** 60-89% cost reduction with semantic matching
+
+### 🤖 Self-Hosted Models (vLLM)
+- **This starter:** Not included (requires GPU infrastructure)
+- **LLM0:** Llama 3.3 8B, Mistral Nemo 12B, Qwen 2.5 Coder with managed GPU deployment
+- **Savings:** Run inference at ~$0.10/1M tokens vs. $0.15-$0.60 for cloud APIs
 
 ### 💰 Cost-Based Rate Limiting
 - **This starter:** Token bucket (requests/min only)

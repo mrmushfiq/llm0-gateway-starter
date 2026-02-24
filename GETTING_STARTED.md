@@ -419,15 +419,11 @@ atlas schema apply \
 - ✅ Per-request cost tracking
 - ✅ Multi-provider failover
 - ✅ Full source code access
-- 🚧 **Self-hosted models (vLLM + K8s)** — Coming Soon
-  - Llama 3.3 8B / Llama 3.1 8B
-  - Mistral Nemo 12B / Mistral 7B
-  - Qwen 2.5 Coder 7B/14B
-- 🚧 **Budget alerts & notifications** — Coming Soon
 
 ### [LLM0.ai](https://llm0.ai) *(Coming Soon)* (Managed Service)
 - ✅ Everything in open source, plus:
 - ✅ **Semantic caching** (36-40% hit rate, 60-89% cost savings)
+- ✅ **Self-hosted models** (vLLM: Llama, Mistral, Qwen with managed GPUs)
 - ✅ **Cost-based rate limiting** ($5/day per customer caps)
 - ✅ **Customer attribution** (track per-user costs)
 - ✅ **Budget alerts** (70%, 85%, 100% thresholds) *(Coming Soon)*

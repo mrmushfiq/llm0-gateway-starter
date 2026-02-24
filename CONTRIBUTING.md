@@ -39,18 +39,12 @@ This project focuses on **core gateway functionality**. Advanced features are av
 
 **Not in scope for this repo:**
 - Semantic caching (vector similarity search)
+- Self-hosted models (requires GPU infrastructure, available in LLM0.ai managed platform)
 - Cost-based rate limiting (per-customer spend caps)
 - Customer attribution (multi-dimensional tracking)
 - Scheduled maintenance jobs
-- Budget alerts & notifications (email, webhook, Slack, PagerDuty) *(Coming Soon)*
-- Spend forecasting & anomaly detection *(Coming Soon)*
-
-**Coming soon in this repo:**
-- Self-hosted models (vLLM + K8s support)
-  - Llama 3.3 8B / Llama 3.1 8B
-  - Mistral Nemo 12B / Mistral 7B
-  - Qwen 2.5 Coder 7B/14B
-- Basic budget alerts & notifications
+- Budget alerts & notifications (email, webhook, Slack, PagerDuty)
+- Spend forecasting & anomaly detection
 
 These features are part of LLM0's managed service.
 

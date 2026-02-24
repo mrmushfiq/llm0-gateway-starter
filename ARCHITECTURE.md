@@ -172,26 +172,12 @@ docker run -p 8080:8080 --env-file .env llm-gateway
 - SQL injection protection (parameterized queries)
 - CORS configured
 
-## Coming Soon 🚧
-
-### Self-Hosted Models (vLLM + K8s)
-- **Llama 3.3 8B / Llama 3.1 8B** — Sweet spot for K8s self-hosting
-- **Mistral Nemo 12B / Mistral 7B** — Apache 2.0, coding-focused
-- **Qwen 2.5 Coder 7B/14B** — Best coding model at small sizes
-- Run inference at ~$0.10/1M tokens, no rate limits, full control
-
-### Budget Alerts & Notifications
-- Multi-threshold alerts (70%, 85%, 100%)
-- Multi-channel notifications (email, webhook, Slack, PagerDuty)
-- Spend forecasting & anomaly detection
-
----
-
 ## Advanced Features
 
 This project provides core gateway functionality. For production-scale deployments with high traffic, [LLM0.ai](https://llm0.ai) *(Coming Soon)* offers:
 
 - **Semantic caching** (36-40% hit rate vs. 12-15%)
+- **Self-hosted models** (vLLM: Llama, Mistral, Qwen with managed GPU infrastructure)
 - **Cost-based rate limiting** ($5/day per customer caps)
 - **Customer attribution** (multi-dimensional tracking)
 - **Scheduled maintenance** (automatic cache cleanup, reconciliation)

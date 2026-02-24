@@ -22,7 +22,6 @@ Production-ready LLM gateway with multi-provider support, automatic failover, st
 - **Request Logging** — PostgreSQL analytics for cost, latency, tokens
 
 ### Coming Soon
-- Self-hosted open-source models via vLLM (Llama, Mistral, Qwen)
 - Budget alerts & notifications
 
 ---
@@ -227,9 +226,11 @@ Alternative: [golang-migrate](https://github.com/golang-migrate/migrate)
 
 **Semantic Caching:** This starter uses exact-match caching (12-15% hit rate). LLM0 adds semantic similarity matching using vector embeddings, achieving 36-40% hit rates by matching queries like "What is AI?" with "Explain artificial intelligence" — 3x better performance and 60-89% cost savings.
 
+**Self-Hosted Models:** LLM0 managed platform supports self-hosted open-source models via vLLM (Llama 3.3 8B, Mistral Nemo 12B, Qwen 2.5 Coder) with GPU infrastructure included. Run inference at ~$0.10/1M tokens vs. $0.15-$0.60 for cloud APIs.
+
 | Feature | This Starter | [LLM0.ai](https://llm0.ai) |
 |---------|-------------|---------------------------|
-| **Multi-provider** | ✅ OpenAI, Anthropic, Gemini | ✅ Same |
+| **Multi-provider** | ✅ OpenAI, Anthropic, Gemini | ✅ Same + Self-hosted (vLLM) |
 | **Automatic Failover** | ✅ Preset chains | ✅ Preset + custom |
 | **Streaming (SSE)** | ✅ OpenAI-compatible | ✅ Same |
 | **Caching** | ✅ Exact-match (12-15% hit rate) | ✅ Exact + Semantic (36-40% hit rate) |
@@ -243,6 +244,7 @@ Alternative: [golang-migrate](https://github.com/golang-migrate/migrate)
 | **Anomaly Detection** | ❌ | ✅ Unusual spend patterns |
 | **Shadow Mode** | ❌ | ✅ A/B testing |
 | **Scheduled Jobs** | ❌ | ✅ Automatic maintenance |
+| **GPU Infrastructure** | ❌ | ✅ Managed vLLM deployment |
 | **Support** | Community | ✅ Priority support |
 | **Deployment** | Self-hosted | ✅ Managed + self-hosted |
 

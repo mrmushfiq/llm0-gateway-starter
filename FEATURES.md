@@ -243,37 +243,6 @@ models/       → Data models
 
 ---
 
-## 🚧 Coming Soon
-
-### 🤖 Self-Hosted Models (vLLM + K8s)
-
-Deploy your own models alongside cloud providers for maximum cost control:
-
-#### **Llama 3.3 8B / Llama 3.1 8B** — Sweet spot for K8s self-hosting
-- Fits comfortably on a single A100 40GB or even a T4 16GB (quantized)
-- Strong general performance for most SaaS use cases
-- vLLM serving is well-documented and battle-tested
-- **Your "cheap alternative to GPT-4o mini" pitch**
-
-#### **Mistral Nemo 12B / Mistral 7B** — Apache 2.0, no restrictions
-- Very efficient for its size
-- Mistral Nemo 12B punches well above its weight for coding tasks
-- Apache 2.0 licensed (no usage restrictions)
-- Great fit if your customers are dev-tool builders
-
-#### **Qwen 2.5 Coder 7B/14B** — Best coding-specialized model at small sizes
-- Current leader for code generation at 7B/14B sizes
-- Strong pull for SaaS devs building AI features
-- Optimized for developer tooling and IDEs
-
-**Why this matters:**
-- Run inference at ~$0.10/1M tokens vs. $0.15-$0.60 for cloud APIs
-- No rate limits on your own infrastructure
-- Full control over model versions and customization
-- Ideal for high-volume, predictable workloads
-
----
-
 ## What's NOT Included
 
 ### Advanced Features (Available in [LLM0.ai](https://llm0.ai) *Coming Soon*)
@@ -282,6 +251,11 @@ Deploy your own models alongside cloud providers for maximum cost control:
 - **This project:** 12-15% hit rate (exact-match)
 - **LLM0 *(Coming Soon)*:** 36-40% hit rate (exact + semantic)
 - **Difference:** 3x better cache performance, 60-89% cost savings
+
+#### Self-Hosted Models (vLLM)
+- **This project:** Not included (requires GPU infrastructure)
+- **LLM0 *(Coming Soon)*:** Llama 3.3 8B, Mistral Nemo 12B, Qwen 2.5 Coder with managed GPU deployment
+- **Difference:** Run inference at ~$0.10/1M tokens, no rate limits, full control
 
 #### Cost-Based Rate Limiting
 - **This project:** Token bucket (requests/minute)
@@ -303,8 +277,8 @@ Deploy your own models alongside cloud providers for maximum cost control:
 
 | Feature | This Project | [LLM0.ai](https://llm0.ai) *(Coming Soon)* |
 |---------|--------------|---------------------------|
-| **Multi-provider** | ✅ 3 providers | ✅ 3 providers |
-| **Self-hosted models** | 🚧 Coming Soon | ✅ vLLM + K8s support |
+| **Multi-provider** | ✅ 3 providers | ✅ 3 providers + Self-hosted (vLLM) |
+| **Self-hosted models** | ❌ (requires GPU infrastructure) | ✅ Llama, Mistral, Qwen with managed GPUs |
 | **Failover** | ✅ Preset chains | ✅ Preset + custom |
 | **Streaming** | ✅ SSE | ✅ SSE |
 | **Caching** | ✅ Exact-match (12-15%) | ✅ Exact + Semantic (36-40%) |
