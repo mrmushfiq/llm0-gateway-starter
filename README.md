@@ -139,6 +139,74 @@ X-Latency-Ms: 28
 
 ---
 
+## API Key Management
+
+**Single app?** The migration seeds a test key (`gw_test_abc123`) — you can use it as-is and ignore everything below.
+
+**Multi-tenant (one key per customer):** All key operations are plain SQL against the `api_keys` table. No restart needed for any change.
+
+### Key format and naming convention
+
+Use the `gw_` prefix so keys are immediately identifiable in logs, environment variables, and code reviews. Recommended format:
+
+```
+gw_<environment>_<random>
+
+gw_prod_a1b2c3d4e5f6g7h8    # production customer key
+gw_dev_a1b2c3d4e5f6g7h8     # development/test key
+gw_internal_a1b2c3d4e5f6    # internal service key
+```
+
+The `key_prefix` column (first 12 chars) is what appears in logs — enough to identify a key without exposing it.
+
+### Generate a key
+
+```bash
+# Generates: gw_<32 random hex chars>
+echo "gw_$(openssl rand -hex 16)"
+```
+
+Output example: `gw_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5`
+
+### Create a key
+
+```sql
+-- Replace 'gw_prod_a1b2c3d4e5f6g7h8' with your generated key
+INSERT INTO api_keys (key_hash, key_prefix, name, rate_limit_per_minute, cache_enabled)
+VALUES (
+  encode(digest('gw_prod_a1b2c3d4e5f6g7h8', 'sha256'), 'hex'),
+  'gw_prod_a1b2',      -- first 12 chars (shown in logs, never the full key)
+  'Customer A',
+  100,                 -- requests per minute
+  true
+);
+```
+
+The raw key (`gw_prod_a1b2c3d4e5f6g7h8`) is what the client sends as `Authorization: Bearer ...`. Only the SHA-256 hash is stored — the raw value is never saved.
+
+### List all keys
+
+```sql
+SELECT key_prefix, name, rate_limit_per_minute, is_active, created_at
+FROM api_keys
+ORDER BY created_at DESC;
+```
+
+### Update rate limit
+
+```sql
+-- Takes effect immediately, no restart needed
+UPDATE api_keys SET rate_limit_per_minute = 500 WHERE name = 'Customer A';
+```
+
+### Revoke a key
+
+```sql
+UPDATE api_keys SET is_active = false WHERE key_prefix = 'gw_prod_a1b2';
+```
+
+---
+
 ## Architecture
 
 ```

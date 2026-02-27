@@ -263,22 +263,47 @@ curl -X POST http://localhost:8080/v1/chat/completions \
 
 ### 2. Create Your Own API Key
 
+First, generate a key with sufficient entropy:
+
+```bash
+# Generates: gw_<32 random hex chars>
+echo "gw_$(openssl rand -hex 16)"
+# Example output: gw_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5
+```
+
+Use the `gw_` prefix so keys are identifiable in logs and config files. Recommended naming:
+- `gw_prod_<random>` — production customer key
+- `gw_dev_<random>` — development/test key
+- `gw_internal_<random>` — internal service key
+
+Then insert it into the database:
+
 ```sql
 -- Connect to database
 psql postgresql://gateway:gateway@localhost:5432/gateway
 
--- Create new API key
+-- Replace with your generated key
 INSERT INTO api_keys (key_hash, key_prefix, name, rate_limit_per_minute, cache_enabled)
 VALUES (
-  encode(digest('my_secret_key_abc123', 'sha256'), 'hex'),
-  'my_secret_key',
-  'My API Key',
+  encode(digest('gw_prod_a1b2c3d4e5f6g7h8', 'sha256'), 'hex'),
+  'gw_prod_a1b2',   -- first 12 chars (shown in logs, never the full key)
+  'Customer A',
   100,
   true
 );
 ```
 
-Now use `my_secret_key_abc123` as your API key.
+The raw key (`gw_prod_a1b2c3d4e5f6g7h8`) is what the client sends as `Authorization: Bearer ...`. Only the SHA-256 hash is stored — the raw value is never saved to the database.
+
+### Revoke / Disable a Key
+
+```sql
+-- Immediately blocks all requests using this key
+UPDATE api_keys SET is_active = false WHERE key_prefix = 'gw_prod_a1b2';
+
+-- Re-enable if needed
+UPDATE api_keys SET is_active = true WHERE key_prefix = 'gw_prod_a1b2';
+```
 
 ### 3. Customize Failover Chains
 
